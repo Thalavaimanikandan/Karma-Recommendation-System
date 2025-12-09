@@ -1,0 +1,15 @@
+sudo pkill -f ollama
+sudo lsof -i :11434
+
+# 1. Install everything
+pip install -r requirements.txt
+
+# 2. Start Ollama (separate terminal)
+ollama serve
+
+# 3. Start Flask API (separate terminal)
+source venv/bin/activate
+python app.py
+
+# 4. Open Dashboard
+firefox dashboard.html

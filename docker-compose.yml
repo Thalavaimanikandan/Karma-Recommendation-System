@@ -1,110 +1,113 @@
-version: '3.8'
+version: '3'
+
+networks:
+  gorse-network:
+    driver: bridge
 
 services:
-  # MySQL for Gorse
-  gorse-mysql:
-    image: mysql:8.0
+  mysql:
+    image: mysql:8
     container_name: gorse-mysql
+    networks:
+      - gorse-network
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT_PASSWORD: root_pass
       MYSQL_DATABASE: gorse
       MYSQL_USER: gorse
-      MYSQL_PASSWORD: gorse_password
+      MYSQL_PASSWORD: gorse_pass
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - recommendation-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
-  # Redis for Gorse
-  gorse-redis:
-    image: redis:7-alpine
+  redis:
+    image: redis:alpine
     container_name: gorse-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
     networks:
-      - recommendation-net
-
-  # Gorse Master
-  gorse-master:
-    image: zhenghaoz/gorse-master:latest
-    container_name: gorse-master
+      - gorse-network
     ports:
-      - "8086:8086"
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  master:
+    image: zhenghaoz/gorse-master
+    container_name: gorse-master
+    networks:
+      - gorse-network
+    ports:
+      - "9090:8088"
       - "8088:8088"
     volumes:
-      - ./config/gorse-config.toml:/etc/gorse/config.toml
-    command: >
-      -c /etc/gorse/config.toml
-      --master-host gorse-master
-      --master-port 8086
-      --dashboard-host 0.0.0.0
-      --dashboard-port 8088
+      - ./config/config.toml:/etc/gorse/config.toml
+    command: 
+      - "-c"
+      - "/etc/gorse/config.toml"
     depends_on:
-      - gorse-mysql
-      - gorse-redis
-    networks:
-      - recommendation-net
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
-  # Gorse Server
-  gorse-server:
-    image: zhenghaoz/gorse-server:latest
+  server:
+    image: zhenghaoz/gorse-server
     container_name: gorse-server
+    networks:
+      - gorse-network
     ports:
       - "8087:8087"
     volumes:
-      - ./config/gorse-config.toml:/etc/gorse/config.toml
-    command: >
-      -c /etc/gorse/config.toml
-      --master-host gorse-master
-      --master-port 8086
-      --server-host 0.0.0.0
-      --server-port 8087
-    depends_on:
-      - gorse-master
-    networks:
-      - recommendation-net
-
-  # MongoDB
-  mongo:
-    image: mongo:7
-    container_name: recommendation-mongo
-    ports:
-      - "27017:27017"
+      - ./config/config.toml:/etc/gorse/config.toml
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: mongo_password
+      # Pass database config via environment
+      GORSE_CACHE_STORE: "redis://gorse-redis:6379/0"
+      GORSE_DATA_STORE: "mysql://gorse:gorse_pass@tcp(gorse-mysql:3306)/gorse?parseTime=true"
+    command:
+      - "--master-host"
+      - "gorse-master"
+      - "--master-port"
+      - "8086"
+      - "--http-host"
+      - "0.0.0.0"
+      - "--http-port"
+      - "8087"
+    depends_on:
+      - master
+      - mysql
+      - redis
+    restart: unless-stopped
+
+  worker:
+    image: zhenghaoz/gorse-worker
+    container_name: gorse-worker
+    networks:
+      - gorse-network
     volumes:
-      - mongo_data:/data/db
-    networks:
-      - recommendation-net
-
-  # Flask Application
-  flask-app:
-    build: .
-    container_name: recommendation-api
-    ports:
-      - "5000:5000"
+      - ./config/config.toml:/etc/gorse/config.toml  
     environment:
-      - FLASK_ENV=production
-      - GORSE_URL=http://gorse-server:8087
-      - MONGODB_URL=mongodb://root:mongo_password@mongo:27017
-      - REDIS_URL=redis://gorse-redis:6379
+      # Pass database config via environment
+        GORSE_CACHE_STORE: "redis://host.docker.internal:6379/0"
+        GORSE_DATA_STORE: "mysql://gorse:gorse_pass@tcp(gorse-mysql:3306)/gorse?parseTime=true"
+    command:
+      - "--master-host"
+      - "gorse-master"
+      - "--master-port"
+      - "8086"
+      - "-j"
+      - "1"
     depends_on:
-      - gorse-server
-      - mongo
-      - gorse-redis
-    networks:
-      - recommendation-net
+      - master
+      - mysql
+      - redis
+    restart: unless-stopped
 
 volumes:
   mysql_data:
-  redis_data:
-  mongo_data:
-
-networks:
-  recommendation-net:
-    driver: bridge
