@@ -17,12 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install spaCy LG model
 RUN pip install --no-cache-dir https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.7.1/en_core_web_lg-3.7.1-py3-none-any.whl
 
-# Copy application source code
+# Copy application code
 COPY . .
 
 # Expose port
 EXPOSE 5000
 
-# Start API using gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "app:app"]
-

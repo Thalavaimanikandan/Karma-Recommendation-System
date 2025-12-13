@@ -1,0 +1,222 @@
+[
+  {
+    "_id": "post_001",
+    "title": "Top 10 Action Movies of 2024",
+    "body": "From explosive blockbusters to intense thrillers, 2024 has delivered some of the best action cinema we've seen in years. Featuring incredible stunts, compelling stories, and unforgettable performances.",
+    "category": "movies",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452511",
+    "likes": 450,
+    "views": 7800
+  },
+  {
+    "_id": "post_002",
+    "title": "Best Romantic Movies to Watch on Netflix",
+    "body": "Looking for a feel-good movie night? These romantic films will make you laugh and cry. Perfect for a cozy evening with your loved ones.",
+    "category": "movies",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452519",
+    "likes": 289,
+    "views": 4200
+  },
+  {
+    "_id": "post_003",
+    "title": "Upcoming Marvel Movies 2025 Release Schedule",
+    "body": "Marvel continues to expand its cinematic universe with exciting new releases. Here's everything we know about the upcoming superhero films, series, and crossover events.",
+    "category": "movies",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452520",
+    "likes": 840,
+    "views": 15600
+  },
+  {
+    "_id": "post_004",
+    "title": "Bollywood Box Office Hits 2024",
+    "body": "Indian cinema dominated the box office with record-breaking films. From action spectacles to emotional dramas, here are the biggest Bollywood hits.",
+    "category": "movies",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452522",
+    "likes": 567,
+    "views": 9200
+  },
+  {
+    "_id": "post_005",
+    "title": "Best Horror Movies for Halloween",
+    "body": "Get ready for spine-chilling scares with these terrifying horror films. From psychological thrillers to supernatural terror.",
+    "category": "movies",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452523",
+    "likes": 392,
+    "views": 6100
+  },
+  {
+    "_id": "post_006",
+    "title": "Oscar-Winning Films You Must Watch",
+    "body": "Celebrate cinematic excellence with these Academy Award winners. Masterpieces that defined generations.",
+    "category": "movies",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452529",
+    "likes": 712,
+    "views": 11400
+  },
+  {
+    "_id": "post_007",
+    "title": "Cricket World Cup 2024 India Victory Highlights",
+    "body": "India's historic victory at the Cricket World Cup was unforgettable. Relive the best moments, incredible catches, and match-winning performances that made history.",
+    "category": "sports",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452530",
+    "likes": 1520,
+    "views": 28900
+  },
+  {
+    "_id": "post_008",
+    "title": "Top Football Transfer News and Rumors",
+    "body": "The transfer window brings shocking moves. Major clubs are reshaping their squads with record-breaking signings.",
+    "category": "sports",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452532",
+    "likes": 410,
+    "views": 6800
+  },
+  {
+    "_id": "post_009",
+    "title": "NBA Championship 2024 Finals Recap",
+    "body": "Basketball excellence on full display. The most thrilling NBA finals in recent memory.",
+    "category": "sports",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452533",
+    "likes": 623,
+    "views": 9500
+  },
+  {
+    "_id": "post_010",
+    "title": "IPL 2024 Season Review and Stats",
+    "body": "Indian Premier League delivered entertainment and records. Top performers, best matches, and memorable moments.",
+    "category": "sports",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452534",
+    "likes": 890,
+    "views": 14200
+  },
+  {
+    "_id": "post_011",
+    "title": "Best Budget Smartphones Under 20000 in 2025",
+    "body": "You don't need to break the bank for a great phone. These budget smartphones offer flagship features at affordable prices with excellent cameras and performance.",
+    "category": "technology",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452535",
+    "likes": 478,
+    "views": 7900
+  },
+  {
+    "_id": "post_012",
+    "title": "Latest AI Trends and Innovations in 2025",
+    "body": "Artificial Intelligence is transforming industries. From generative AI to autonomous systems, discover the innovations shaping our future.",
+    "category": "technology",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452536",
+    "likes": 956,
+    "views": 16200
+  },
+  {
+    "_id": "post_013",
+    "title": "Programming Languages to Learn for Career Growth",
+    "body": "Which programming language should you learn in 2025? Python, JavaScript, and Rust are leading the pack for different use cases.",
+    "category": "technology",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452538",
+    "likes": 612,
+    "views": 10100
+  },
+  {
+    "_id": "post_014",
+    "title": "Best Gaming Laptops for Developers 2024",
+    "body": "Powerful machines that handle both coding and gaming. High-performance laptops with excellent displays and thermal management.",
+    "category": "technology",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452539",
+    "likes": 534,
+    "views": 8700
+  },
+  {
+    "_id": "post_015",
+    "title": "Machine Learning Tutorial for Beginners",
+    "body": "Start your AI journey with this comprehensive guide. Learn basics of ML, algorithms, and practical applications.",
+    "category": "technology",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452540",
+    "likes": 723,
+    "views": 12300
+  },
+  {
+    "_id": "post_016",
+    "title": "Easy Pasta Recipes for Busy Weeknights",
+    "body": "Master Italian cooking with these simple pasta recipes. Perfect for busy weeknights and impress your family with authentic flavors.",
+    "category": "food",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452542",
+    "likes": 334,
+    "views": 5600
+  },
+  {
+    "_id": "post_017",
+    "title": "Best Street Food in Mumbai You Must Try",
+    "body": "Explore Mumbai's vibrant street food scene. From vada pav to pav bhaji, discover the flavors that make this city special.",
+    "category": "food",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452543",
+    "likes": 767,
+    "views": 13200
+  },
+  {
+    "_id": "post_018",
+    "title": "Healthy Breakfast Ideas for Weight Loss",
+    "body": "Start your day right with nutritious breakfast options. Delicious recipes that support your fitness goals.",
+    "category": "food",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452544",
+    "likes": 445,
+    "views": 7400
+  },
+  {
+    "_id": "post_019",
+    "title": "Upcoming Music Festivals 2025 India",
+    "body": "Get ready for the biggest music festivals featuring international artists and local talent. Complete lineup and ticket information.",
+    "category": "music",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452545",
+    "likes": 521,
+    "views": 8900
+  },
+  {
+    "_id": "post_020",
+    "title": "Top Hindi Songs of 2024 Playlist",
+    "body": "The year's biggest Bollywood hits and independent music. Trending songs that dominated charts.",
+    "category": "music",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452546",
+    "likes": 889,
+    "views": 14600
+  },
+  {
+    "_id": "post_021",
+    "title": "Photography Tips for Beginners 2024",
+    "body": "Learn the basics of photography from composition to lighting. Transform your hobby into stunning visual stories.",
+    "category": "hobby",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452547",
+    "likes": 298,
+    "views": 4900
+  },
+  {
+    "_id": "post_022",
+    "title": "Best Travel Destinations in India",
+    "body": "Explore incredible India with these must-visit destinations. From mountains to beaches, culture to adventure.",
+    "category": "travel",
+    "author_id": "admin",
+    "created_at": "2025-12-11 12:12:56.452548",
+    "likes": 678,
+    "views": 11200
+  }
+]

@@ -13,3 +13,7 @@ python app.py
 
 # 4. Open Dashboard
 firefox dashboard.html
+
+docker logs recommendation_qdrant
+
+web UI: http://localhost:6333/dashboard

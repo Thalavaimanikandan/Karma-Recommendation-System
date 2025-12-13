@@ -1,39 +1,106 @@
-[master]
-port = 8086
-host = "0.0.0.0"
-n_jobs = 1
-meta_timeout = 10
-
-[server]
-default_n = 10
-api_key = ""
+# Gorse Configuration File
 
 [database]
-data_store = "mysql://gorse:gorse_pass@tcp(gorse-mysql:3306)/gorse?parseTime=true"
-cache_store = "redis://gorse-redis:6379/0"
+# Cache database (Redis)
+cache_store = "redis://redis:6379"
+
+# Data database (MySQL)
+data_store = "mysql://gorse:gorse_pass@tcp(mysql:3306)/gorse?parseTime=true"
+
+# Table prefix (optional)
+table_prefix = ""
+
+[master]
+# gRPC port for worker/server communication  
+port = 8086
+host = "0.0.0.0"
+
+# HTTP port for dashboard and API
+http_port = 8088
+http_host = "0.0.0.0"
+
+# Number of working jobs in the master node
+jobs = 1
+dashboard_user_name = "admin"
+dashboard_password = "admin"
+
+[server]
+# Default number of returned items
+default_n = 10
+
+# Clock error allowed for JWT validation
+clock_error = 5
+
+# API key for authentication (optional, can be empty)
+api_key = ""
 
 [recommend]
+# Cache size for recommended/popular/latest items
 cache_size = 100
+
+# Recommended cache expire time
 cache_expire = "72h"
 
-[recommend.data_source]
-positive_feedback_types = ["read", "like", "favorite"]
-read_feedback_types = ["read"]
-positive_feedback_ttl = 0
-item_ttl = 0
-
-[recommend.popular]
-popular_window = "720h"
-
 [recommend.collaborative]
+# Enable approximate collaborative filtering recommend using vector index
+enable_index = true
+index_recall = 0.9
+index_fit_epoch = 3
 model_fit_period = "60m"
 model_search_period = "360m"
+model_search_epoch = 100
+model_search_trials = 10
+enable_model_size_search = false
+
+[recommend.replacement]
+# Replace historical items with latest items
+enable_replacement = false
+positive_replacement_decay = 0.8
+read_replacement_decay = 0.6
 
 [recommend.offline]
-check_recommend_period = "1m"
+# Check recommendation for all users every 1 hour
+check_recommend_period = "1h"
 refresh_recommend_period = "24h"
+
+# Enable latest recommendation
+enable_latest_recommend = true
+
+# Enable popular recommendation  
+enable_popular_recommend = true
+
+# Enable user-based recommendation
+enable_user_based_recommend = true
+
+# Enable item-based recommendation
+enable_item_based_recommend = true
+
+# Enable collaborative filtering recommendation
 enable_collaborative_recommend = true
 
+# Enable click-through rate prediction
+enable_click_through_prediction = true
+
+# Explore latest and popular items
+explore_recommend = { popular = 0.0, latest = 0.0 }
+
 [recommend.online]
-fallback_recommend = ["latest"]
+# Fallback recommend when no feedback
+fallback_recommend = ["latest", "popular"]
+
+# Number of feedback used in online recommendation
 num_feedback_fallback_item_based = 10
+
+[recommend.user_neighbors]
+# Enable approximate user neighbor searching using vector index
+enable_index = true
+index_recall = 0.9
+index_fit_epoch = 3
+neighbor_type = "auto"
+
+[recommend.item_neighbors]
+# Enable approximate item neighbor searching using vector index
+enable_index = true
+index_recall = 0.9
+index_fit_epoch = 3
+neighbor_type = "auto"

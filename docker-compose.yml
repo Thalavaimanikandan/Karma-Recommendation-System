@@ -1,113 +1,169 @@
-version: '3'
+# docker-compose.yml - Complete System with Gorse Config (FIXED)
+version: '3.8'
 
 networks:
-  gorse-network:
+  recommendation-network:
     driver: bridge
 
 services:
+  # ==============================================
+  # MongoDB
+  # ==============================================
+  mongodb:
+    image: mongo:7.0
+    container_name: recommendation_mongodb
+    networks:
+      - recommendation-network
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=recommendation_db
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==============================================
+  # MySQL (For Gorse)
+  # ==============================================
   mysql:
     image: mysql:8
-    container_name: gorse-mysql
+    container_name: gorse_mysql
     networks:
-      - gorse-network
+      - recommendation-network
     environment:
       MYSQL_ROOT_PASSWORD: root_pass
       MYSQL_DATABASE: gorse
       MYSQL_USER: gorse
       MYSQL_PASSWORD: gorse_pass
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_pass"]
       timeout: 20s
       retries: 10
+      interval: 10s
 
+  # ==============================================
+  # Redis (For Gorse)
+  # ==============================================
   redis:
-    image: redis:alpine
-    container_name: gorse-redis
+    image: redis/redis-stack:latest
+    container_name: gorse_redis
     networks:
-      - gorse-network
+      - recommendation-network
     ports:
-      - "6380:6379"
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
 
-  master:
-    image: zhenghaoz/gorse-master
-    container_name: gorse-master
+  # ==============================================
+  # Gorse Master (Configuration + Admin Dashboard)
+  # Port 8086: gRPC for worker/server communication
+  # Port 8088: HTTP API + Dashboard
+  # ==============================================
+  gorse-master:
+    image: zhenghaoz/gorse-master:latest
+    container_name: gorse_master
+    restart: unless-stopped
     networks:
-      - gorse-network
+      - recommendation-network
     ports:
-      - "9090:8088"
-      - "8088:8088"
+      - "8086:8086"  # gRPC port
+      - "8088:8088"  # HTTP API + Dashboard
     volumes:
-      - ./config/config.toml:/etc/gorse/config.toml
-    command: 
-      - "-c"
-      - "/etc/gorse/config.toml"
+      - ./config/config.toml:/etc/gorse/config.toml:ro
+    entrypoint: 
+      - /bin/sh
+      - -c
+      - |
+        sleep 10
+        gorse-master -c /etc/gorse/config.toml
     depends_on:
       mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
-    restart: unless-stopped
 
-  server:
-    image: zhenghaoz/gorse-server
-    container_name: gorse-server
+  # ==============================================
+  # Gorse Server (Recommendation API)
+  # Port 8087: Serves recommendations to clients
+  # ==============================================
+  gorse-server:
+    image: zhenghaoz/gorse-server:latest
+    container_name: gorse_server
+    restart: unless-stopped
     networks:
-      - gorse-network
+      - recommendation-network
     ports:
-      - "8087:8087"
-    volumes:
-      - ./config/config.toml:/etc/gorse/config.toml
-    environment:
-      # Pass database config via environment
-      GORSE_CACHE_STORE: "redis://gorse-redis:6379/0"
-      GORSE_DATA_STORE: "mysql://gorse:gorse_pass@tcp(gorse-mysql:3306)/gorse?parseTime=true"
-    command:
-      - "--master-host"
-      - "gorse-master"
-      - "--master-port"
-      - "8086"
-      - "--http-host"
-      - "0.0.0.0"
-      - "--http-port"
-      - "8087"
+      - "8087:8087"  # Changed from 8088 to 8087
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        sleep 20
+        gorse-server --master-host gorse-master --master-port 8086 --http-host 0.0.0.0 --http-port 8087
     depends_on:
-      - master
-      - mysql
-      - redis
-    restart: unless-stopped
+      - gorse-master
 
-  worker:
-    image: zhenghaoz/gorse-worker
-    container_name: gorse-worker
-    networks:
-      - gorse-network
-    volumes:
-      - ./config/config.toml:/etc/gorse/config.toml  
-    environment:
-      # Pass database config via environment
-        GORSE_CACHE_STORE: "redis://host.docker.internal:6379/0"
-        GORSE_DATA_STORE: "mysql://gorse:gorse_pass@tcp(gorse-mysql:3306)/gorse?parseTime=true"
-    command:
-      - "--master-host"
-      - "gorse-master"
-      - "--master-port"
-      - "8086"
-      - "-j"
-      - "1"
-    depends_on:
-      - master
-      - mysql
-      - redis
+  # ==============================================
+  # Gorse Worker (Background Processing)
+  # No exposed ports - communicates with master via gRPC
+  # ==============================================
+  gorse-worker:
+    image: zhenghaoz/gorse-worker:latest
+    container_name: gorse_worker
     restart: unless-stopped
+    networks:
+      - recommendation-network
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        sleep 20
+        gorse-worker --master-host gorse-master --master-port 8086 --jobs 1
+    depends_on:
+      - gorse-master
+
+  # ==============================================
+  # Qdrant Vector Database
+  # ==============================================
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: recommendation_qdrant
+    networks:
+      - recommendation-network
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant_data:/qdrant/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
+  mongodb_data:
+    driver: local
   mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  qdrant_data:
+    driver: local
